@@ -7,3 +7,5 @@ redis == 5.0.1
 
 #socket.io
 python-socketio == 5.10.0
+
+Gunicorn
