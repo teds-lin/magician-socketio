@@ -32,10 +32,30 @@ active_players: Dict[str, Dict[str, str]] = {}
 @sio.on("player_joined")
 def player_joined(sid: str, data: Dict[str, str]):
     player_id: str = data.get("player_id")
+    # 檢查是否有相同的 player_id
+    for existing_sid, player_data in active_players.items():
+        if player_data["player_id"] == player_id:
+            # 如果找到相同的 player_id，斷開舊連接
+            sio.disconnect(existing_sid)
+            break
     active_players[sid] = {"player_id": player_id}
     sio.enter_room(sid, player_id)
     sio.emit("player_joined", {"player_id": player_id}, room=player_id)
-    print(active_players)
+    print(f"Player joined: {player_id}")
+    print(f"Active players: {active_players}")
+
+
+@sio.event
+def disconnect(sid: str):
+    if sid in active_players:
+        player_id = active_players[sid]["player_id"]
+        del active_players[sid]
+        sio.leave_room(sid, player_id)
+        sio.emit("player_left", {"player_id": player_id}, room=player_id)
+        print(f"Player left: {player_id}")
+        print(f"Active players: {active_players}")
+    else:
+        print(f"Unknown client disconnected: {sid}")
 
 
 if __name__ == "__main__":
