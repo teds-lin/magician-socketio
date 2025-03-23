@@ -8,5 +8,5 @@ redis == 5.0.1
 #socket.io
 python-socketio == 5.10.0
 
-gunicorn == 22.0.0
+gunicorn == 23.0.0
 gevent == 24.2.1
